@@ -1,0 +1,4 @@
+requests
+Flask>=0.10.1
+Flask-RESTful==0.3.5
+lxml==3.4.4
