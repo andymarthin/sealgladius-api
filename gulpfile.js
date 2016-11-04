@@ -9,7 +9,7 @@ var reload = browserSync.reload;
 
 gulp.task('server', function(){
     browserSync.init({
-        proxy: "localhost:8080"
+        proxy: "localhost:5000"
     });
 });
 
