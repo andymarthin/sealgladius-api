@@ -6,7 +6,6 @@ from flask import Flask, request, flash, url_for, redirect, \
      render_template, abort, send_from_directory
 from flask_restful import Resource, Api, reqparse
 from lxml import html
-from flask.ext.heroku import Heroku
 
 app = Flask(__name__)
 api = Api(app)
@@ -285,4 +284,4 @@ api.add_resource(getStock, '/getstok')
 api.add_resource(buyWithSilverCoinTryLoop, '/tryloop')
 
 if __name__ == '__main__':
-    heroku = Heroku(app)
+    app.run(debug=True, use_reloader=True)

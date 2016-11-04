@@ -1,1 +1,1 @@
-python flaskapp.py
+web: gunicorn app:app --log-file=-
