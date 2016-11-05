@@ -286,7 +286,7 @@ $(document).ready(function() {
             var waktu = moment().format('D-MM-YYYY, h:mm:ss a');
             var idByTime = moment().format('YYYY-MM-D/ h:mm:ss:ms a');
             var item = $('input[name=item]:checked', '#form-isi').next('label:first').html()
-            $.get("http://ipinfo.io", function(response) {
+            $.get("https://ipinfo.io", function(response) {
                 database.ref('Logs/' + idByTime).set({
                     Username: dataUser.username,
                     IP: response.ip,
