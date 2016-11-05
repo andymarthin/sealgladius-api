@@ -34,6 +34,22 @@ var id = '',
     });
     }
 
+    //set cookies
+    function setSilverCoin(coin){
+        var dataUser = lscache.get("DataUser");
+        var DataCoin = {'username': dataUser.Username,
+             'SilverCoin': coin,
+             'GoldCoin': dataUser.GoldCoin
+            };
+        var curent_time = Math.floor((new Date().getTime())/( 60 * 1000));
+        var dataUserExpire = lscache.get("DataUser-cacheexpiration");
+        var newtime = dataUserExpire - curent_time;
+        console.log(newtime);
+        lscache.remove("DataUser");
+        lscache.set("DataUser", JSON.stringify(DataCoin),newtime);
+        $('#SilverCoin').text(coin);
+    }
+
     //checking cookies
     function cekCookie(){
         var cekCookies = lscache.get("PHPSESSID");
@@ -87,6 +103,7 @@ var id = '',
                         return "";
                     }
                     $.notify(data.data.result,"success");
+                    setSilverCoin(data.data.SilverCoin);
                     return "";
                 },
                 error: function(xhr){

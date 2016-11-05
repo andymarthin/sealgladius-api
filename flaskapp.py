@@ -92,19 +92,27 @@ class buyWithSilverCoin(Resource):
 											data = payload, 
 											headers = dict(referer = URLBUY))
 			tree = html.fromstring(result.content)
+			if result.content == "Failed buy!, item is sold out":
+				return {'status' : 'fail', 'data':{'message': result.content}},403
+			elif result.content == "Failed buy!, your S Coin is not enough":
+				return {'status' : 'fail', 'data':{'message': result.content}},403
+
 			hasil = tree.xpath("//text()")
+			coinRaw = hasil[3].split(' : ',1)
+			coin = coinRaw[1].split(' ',1)
 
 			elapsed = float("%.3f" % (timeit.default_timer() - start_time))
 
 			if hasil[0] == 'Failed buy!, your bank is full!':
 				return {'status':'success','time':elapsed,'data':{'result': 'Bank Full'}}
 			elif hasil[0] == 'Success Buy!, check bank at slot ':
-				return {'status':'success','time':elapsed,'data':{'result': hasil[0] + hasil[1]}}
+				return {'status':'success','time':elapsed,'data':{'result': hasil[0] + hasil[1],
+																	'SilverCoin' : coin[0]}}
 			else :
 				return {'status':'fail','time':elapsed,'data':{'message': 'Failed'}},403
 
 		except Exception as e:
-			return {'error': str(e)},403
+			return {'status':'error','data': {'message':str(e)}},403
 
 class buyWithSilverCoinTryLoop(Resource):
 	def post(self):
@@ -158,7 +166,7 @@ class buyWithSilverCoinTryLoop(Resource):
 				i+= 1
 				
 		except Exception as e:
-			return {'error': str(e)},403
+			return {'status':'error','data': {'message':str(e)}},403
 
 class buyItemMall(Resource):
 	def post(self):
