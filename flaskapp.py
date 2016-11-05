@@ -12,7 +12,6 @@ api = Api(app)
 LOGIN_URL = "http://seal-gladius.com/login"
 URL = "http://seal-gladius.com/datauser"
 session_requests = requests.session()
-app.config.from_pyfile('flaskapp.cfg')
 
 @app.route('/')
 def index():
