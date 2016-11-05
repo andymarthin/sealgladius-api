@@ -65,24 +65,24 @@ gulp.task('compress', function (cb) {
 //minify css
 gulp.task('minify-css', function(cb){
 	pump([
-			gulp.src('./static/css/style.css'),
-			cleanCSS({debug: true}, function(details) {
-	            console.log(details.name + ': ' + details.stats.originalSize);
-	            console.log(details.name + ': ' + details.stats.minifiedSize);
+        gulp.src('./static/css/style.css'),
+        cleanCSS({debug: true}, function(details) {
+                console.log(details.name + ': ' + details.stats.originalSize);
+                console.log(details.name + ': ' + details.stats.minifiedSize);
             }),
-            rename({suffix: '.min'}),
-        	gulp.dest(function(file) {
-            	return file.base;
-        	}),
-        	notify({
-	            message: 'CSS Scripts task complete!',
-	            onLast : true
-      		}),	
-        	browserSync.stream(),
-		],
-		cb
-		);
-	});
+        rename({suffix: '.min'}),
+        gulp.dest(function(file) {
+            return file.base;
+        }),
+        notify({
+                message: 'CSS Scripts task complete!',
+                onLast : true
+            }),	
+        browserSync.stream(),
+        ],
+        cb
+    );
+});
 
 
 //watch gulp on development
@@ -104,6 +104,6 @@ gulp.task('serve:production',['server','minify-css','compress','bundle','index-p
         gulp.watch('./templates/*.html').on('change', reload);
         gulp.watch('./static/css/*.css',['bundle','minify-css']).on('change', reload);
     });
-gulp.task('production',['minify-css','compress','bundle','index-production']);
+
 //run task default
-gulp.task('default', ['compress','minify-css']);
+gulp.task('default', ['compress','minify-css','bundle','index-production']);
