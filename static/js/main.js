@@ -218,6 +218,7 @@ $(document).ready(function() {
         jumlah = $('#jumlah').val(); //jumlah yang ingin di beli
         bank = $('#bank').val(); //mengambil password bank
         $('#hasil').html(""); //reset id hasil
+        cekCookie();
         if (bank.length > 3) {
             //untuk beli beli ATB2
             if (id == "ATB") {
