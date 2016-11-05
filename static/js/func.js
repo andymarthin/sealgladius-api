@@ -77,7 +77,7 @@ var id = '',
         try {
             $.ajax({
                 type: "POST",
-                url: "/SilverCoin",
+                url: "/silvercoin",
                 dataType: 'JSON',
                 data: dataJSON,
                 cache: false,
@@ -98,6 +98,36 @@ var id = '',
             alert(e);
         }
     }
+// for buy item with silver coin
+function buyItemMall(id, bank) {
+    var cookies = lscache.get("PHPSESSID");
+    var dataJSON = {'pass': bank, 'item' : id, 'cookies': cookies};
+    cekCookie();
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/itemmall",
+            dataType: 'JSON',
+            data: dataJSON,
+            cache: false,
+            success: function(data) {
+                if(data.data.result == "Bank Full"){
+                    $.notify(data.data.result,"error");
+                    return "";
+                }
+                $.notify(data.data.result,"success");
+                return "";
+            },
+            error: function(xhr){
+                var json = JSON.parse(xhr.responseText);
+                $.notify(json.data.message, "error");   
+            }
+        });
+    } catch (e) {
+        alert(e);
+    }
+}
+
 
 //credits http://css-tricks.com/snippets/jquery/move-cursor-to-end-of-textarea-or-input/
 jQuery.fn.putCursorAtEnd = function() {

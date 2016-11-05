@@ -77,7 +77,7 @@ var id = '',
         try {
             $.ajax({
                 type: "POST",
-                url: "/SilverCoin",
+                url: "/silvercoin",
                 dataType: 'JSON',
                 data: dataJSON,
                 cache: false,
@@ -98,6 +98,36 @@ var id = '',
             alert(e);
         }
     }
+// for buy item with silver coin
+function buyItemMall(id, bank) {
+    var cookies = lscache.get("PHPSESSID");
+    var dataJSON = {'pass': bank, 'item' : id, 'cookies': cookies};
+    cekCookie();
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/itemmall",
+            dataType: 'JSON',
+            data: dataJSON,
+            cache: false,
+            success: function(data) {
+                if(data.data.result == "Bank Full"){
+                    $.notify(data.data.result,"error");
+                    return "";
+                }
+                $.notify(data.data.result,"success");
+                return "";
+            },
+            error: function(xhr){
+                var json = JSON.parse(xhr.responseText);
+                $.notify(json.data.message, "error");   
+            }
+        });
+    } catch (e) {
+        alert(e);
+    }
+}
+
 
 //credits http://css-tricks.com/snippets/jquery/move-cursor-to-end-of-textarea-or-input/
 jQuery.fn.putCursorAtEnd = function() {
@@ -121,7 +151,7 @@ $(document).ready(function() {
     var username = $('#signin-username'),
         password = $('#signin-password');
 
-        cekCookie();
+    cekCookie();
 
     // Initialize Firebase
     var config = {
@@ -175,41 +205,20 @@ $(document).ready(function() {
             //untuk beli beli ATB2
             if (id == "ATB") {
                 id = "440"; // ID dari ATB2
-                var dataString = 'passbank=' + bank + '&idmall=' + id + '&is_ajax=1';
                 for (var i = 0; i < jumlah; i++) {
-                    try {
-                        $.ajax({
-                            type: "POST",
-                            url: "http://seal-gladius.com/itemmall-bayar",
-                            dataType: 'jsonp',
-                            data: dataString,
-                            cache: false,
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            success: function(data) {
-                                console.log(data);
-                            },
-                        });
-
-                    } catch
-                     (e) {
-                        alert(e);
-                    }
+                    buyItemMall(id, bank);
                 }
             } else if (id == "jika") { //untuk beli Jikael All Job
                 for (var i = 0; i < jumlah; i++) {
                     for (var idJika = 272; idJika <= 275; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
-
                 }
             } else if (id == "TBS") { //untuk beli Jikael All Job TBS
                 for (var i = 0; i < jumlah; i++) {
                     for (var idJika = 273; idJika <= 275; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
-
                 }
             } else if (id == "SBS") { // beli Salamander dan Black Salamander
                 for (var i = 0; i < jumlah; i++) {

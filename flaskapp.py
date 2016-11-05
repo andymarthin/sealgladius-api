@@ -193,7 +193,7 @@ class buyItemMall(Resource):
 			elif hasil[0] == 'Success Buy!, check your im bank\n\t\t\t\t\t\t\t':
 				strHasil = hasil[0]
 				hasilakhir = strHasil.split(',',1)
-				return {'status':'success','data':{'result': hasilakhir[0]}}
+				return {'status':'success','data':{'result': hasilakhir[0]+hasilakhir[1]}}
 			else :
 				return {'status':'fail','data':{'message': 'Failed'}},403
 		except Exception as e:
@@ -276,7 +276,7 @@ class getStock(Resource):
 			return {'error': str(e)},403
 
 api.add_resource(login, '/login')
-api.add_resource(buyWithSilverCoin,'/SilverCoin')
+api.add_resource(buyWithSilverCoin,'/silvercoin')
 api.add_resource(getDataUser, '/getdata')
 api.add_resource(buyItemMall, '/itemmall')
 api.add_resource(getStock, '/getstok')

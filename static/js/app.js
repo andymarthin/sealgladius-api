@@ -2,7 +2,7 @@ $(document).ready(function() {
     var username = $('#signin-username'),
         password = $('#signin-password');
 
-        cekCookie();
+    cekCookie();
 
     // Initialize Firebase
     var config = {
@@ -56,41 +56,20 @@ $(document).ready(function() {
             //untuk beli beli ATB2
             if (id == "ATB") {
                 id = "440"; // ID dari ATB2
-                var dataString = 'passbank=' + bank + '&idmall=' + id + '&is_ajax=1';
                 for (var i = 0; i < jumlah; i++) {
-                    try {
-                        $.ajax({
-                            type: "POST",
-                            url: "http://seal-gladius.com/itemmall-bayar",
-                            dataType: 'jsonp',
-                            data: dataString,
-                            cache: false,
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            success: function(data) {
-                                console.log(data);
-                            },
-                        });
-
-                    } catch
-                     (e) {
-                        alert(e);
-                    }
+                    buyItemMall(id, bank);
                 }
             } else if (id == "jika") { //untuk beli Jikael All Job
                 for (var i = 0; i < jumlah; i++) {
                     for (var idJika = 272; idJika <= 275; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
-
                 }
             } else if (id == "TBS") { //untuk beli Jikael All Job TBS
                 for (var i = 0; i < jumlah; i++) {
                     for (var idJika = 273; idJika <= 275; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
-
                 }
             } else if (id == "SBS") { // beli Salamander dan Black Salamander
                 for (var i = 0; i < jumlah; i++) {
