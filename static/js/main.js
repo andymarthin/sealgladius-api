@@ -4,117 +4,127 @@ var id = '',
     formModal = $('.cd-user-modal'),
     formLogin = formModal.find('#cd-login');
 
-// logiin to http://seal-gladius.com/
-    function login(dataLogin) {
-        $.ajax({
-        type: "POST",
-        url: "/login",
-        dataType: 'JSON',
-        data: dataLogin,
-        cache: false,
-        success: function(data) {
-            var DataUser = {'username': data.data.Username,
-                 'SilverCoin': data.data.SilverCoin,
-                 'GoldCoin': data.data.GoldCoin
-                };
-
-            lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 90);
-            lscache.set("DataUser",  JSON.stringify(DataUser),90);
-
-            formModal.removeClass('is-visible');
-            cekCookie();
-            $('#username').text(data.data.Username);
-            $('#kirim').removeClass('btn-hide');
-            $('#login-btn').addClass('btn-hide');
-        },
-        error: function(xhr){
-            var json = JSON.parse(xhr.responseText);
-            $.notify(json.data.message, "error");
-        }
-    });
-    }
-
-    //set cookies
-    function setSilverCoin(coin){
-        var dataUser = lscache.get("DataUser");
-        var DataCoin = {'username': dataUser.Username,
-             'SilverCoin': coin,
-             'GoldCoin': dataUser.GoldCoin
+// login to http://seal-gladius.com/
+function login(dataLogin) {
+    $.ajax({
+    type: "POST",
+    url: "/login",
+    dataType: 'JSON',
+    data: dataLogin,
+    cache: false,
+    success: function(data) {
+        var DataUser = {'username': data.data.Username,
+             'SilverCoin': data.data.SilverCoin,
+             'GoldCoin': data.data.GoldCoin
             };
-        var curent_time = Math.floor((new Date().getTime())/( 60 * 1000));
-        var dataUserExpire = lscache.get("DataUser-cacheexpiration");
-        var newtime = dataUserExpire - curent_time;
-        console.log(newtime);
-        lscache.remove("DataUser");
-        lscache.set("DataUser", JSON.stringify(DataCoin),newtime);
-        $('#SilverCoin').text(coin);
-    }
 
-    //checking cookies
-    function cekCookie(){
-        var cekCookies = lscache.get("PHPSESSID");
-        lscache.flushExpired();
-        if (cekCookies === null) {
-            login_selected();
-            $('#login-btn').removeClass('btn-hide');
-            $('#kirim').addClass('btn-hide');
-            $('#navigasi').addClass('btn-hide');
-        }else{
-            var dataUser = lscache.get("DataUser");
-            $('#username').text(dataUser.username);
-            $('#SilverCoin').text(dataUser.SilverCoin);
-            $('#GoldCoin').text(dataUser.GoldCoin);
-            $('#kirim').removeClass('btn-hide');
-            $('#login-btn').addClass('btn-hide');
-            $('#navigasi').removeClass('btn-hide');
-        }        
-    }
+        lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
+        lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
-    //logout and delete cookies
-    function logout(){
-        lscache.flush();
-        $('#username').text("");
+        formModal.removeClass('is-visible');
         cekCookie();
-        $('#signin-username').val("");
-        $('#signin-password').val("");
+        $('#username').text(data.data.Username);
+        $('#kirim').removeClass('btn-hide');
+        $('#login-btn').addClass('btn-hide');
+        clearFormLogin();
+    },
+    error: function(xhr){
+        var json = JSON.parse(xhr.responseText);
+        $.notify(json.data.message, "error");
     }
+});
+}
 
-    //open modal login
-    function login_selected(){
-        formModal.addClass('is-visible');
-        formLogin.addClass('is-selected');
-    }
+//set Silver coin after buy
+function setSilverCoin(coin){
+    var dataUser = lscache.get("DataUser");
+    var DataCoin = {'username': dataUser.Username,
+         'SilverCoin': coin,
+         'GoldCoin': dataUser.GoldCoin
+        };
+    var curent_time = Math.floor((new Date().getTime())/( 60 * 1000));
+    var dataUserExpire = lscache.get("DataUser-cacheexpiration");
+    var newtime = dataUserExpire - curent_time;
+    lscache.remove("DataUser");
+    lscache.set("DataUser", JSON.stringify(DataCoin),newtime);
+    $('#SilverCoin').text(coin);
+}
 
-    // for buy item with silver coin
-    function buyWithSilverCoin(id, bank) {
-        var cookies = lscache.get("PHPSESSID");
-        var dataJSON = {'pass': bank, 'item' : id, 'cookies': cookies};
-        cekCookie();
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/silvercoin",
-                dataType: 'JSON',
-                data: dataJSON,
-                cache: false,
-                success: function(data) {
-                    if(data.data.result == "Bank Full"){
-                        $.notify(data.data.result,"error");
-                        return "";
-                    }
-                    $.notify(data.data.result,"success");
-                    setSilverCoin(data.data.SilverCoin);
+//checking cookies
+function cekCookie(){
+    var cekCookies = lscache.get("PHPSESSID");
+    lscache.flushExpired();
+    if (cekCookies === null) {
+        login_selected();
+        $('#login-btn').removeClass('btn-hide');
+        $('#kirim').addClass('btn-hide');
+        $('#navigasi').addClass('btn-hide');
+    }else{
+        var dataUser = lscache.get("DataUser");
+        $('#username').text(dataUser.username);
+        $('#SilverCoin').text(dataUser.SilverCoin);
+        $('#GoldCoin').text(dataUser.GoldCoin);
+        $('#kirim').removeClass('btn-hide');
+        $('#login-btn').addClass('btn-hide');
+        $('#navigasi').removeClass('btn-hide');
+    }        
+}
+
+//logout and delete cookies
+function logout(){
+    lscache.flush();
+    $('#username').text("");
+    cekCookie();
+    clearFormBuy();
+}
+
+// delete value in form login
+function clearFormLogin(){
+    $('#signin-username').val("");
+    $('#signin-password').val("");
+}
+
+// delete value in form buy
+function clearFormBuy(){
+    $('#jumlah').val("");
+    $('#bank').val("");
+}
+//open modal login
+function login_selected(){
+    formModal.addClass('is-visible');
+    formLogin.addClass('is-selected');
+}
+
+// for buy item with silver coin
+function buyWithSilverCoin(id, bank) {
+    var cookies = lscache.get("PHPSESSID");
+    var dataJSON = {'pass': bank, 'item' : id, 'cookies': cookies};
+    cekCookie();
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/silvercoin",
+            dataType: 'JSON',
+            data: dataJSON,
+            cache: false,
+            success: function(data) {
+                if(data.data.result == "Bank Full"){
+                    $.notify(data.data.result,"error");
                     return "";
-                },
-                error: function(xhr){
-                    var json = JSON.parse(xhr.responseText);
-                    $.notify(json.data.message, "error");   
                 }
-            });
-        } catch (e) {
-            alert(e);
-        }
+                $.notify(data.data.result,"success");
+                setSilverCoin(data.data.SilverCoin);
+                return "";
+            },
+            error: function(xhr){
+                var json = JSON.parse(xhr.responseText);
+                $.notify(json.data.message, "error");   
+            }
+        });
+    } catch (e) {
+        alert(e);
     }
+}
 // for buy item with silver coin
 function buyItemMall(id, bank) {
     var cookies = lscache.get("PHPSESSID");
@@ -184,7 +194,9 @@ $(document).ready(function() {
         $('#login-modal').click(function(){
             if ($.trim(username.val()).length > 3) {
                 if ($.trim(password.val()).length > 3) {;
-                    var dataLogin = {'username':username.val(), 'password':password.val()}
+                    var dataLogin = {'username':username.val(), 
+                                        'password':password.val()
+                                    }
                     cekCookie();
                     login(dataLogin);
                 }
@@ -208,6 +220,7 @@ $(document).ready(function() {
     $(document).keyup(function(event){
         if(event.which=='27'){
             formModal.removeClass('is-visible');
+            clearFormLogin();
         }
     });
 

@@ -18,7 +18,9 @@ $(document).ready(function() {
         $('#login-modal').click(function(){
             if ($.trim(username.val()).length > 3) {
                 if ($.trim(password.val()).length > 3) {;
-                    var dataLogin = {'username':username.val(), 'password':password.val()}
+                    var dataLogin = {'username':username.val(), 
+                                        'password':password.val()
+                                    }
                     cekCookie();
                     login(dataLogin);
                 }
@@ -42,6 +44,7 @@ $(document).ready(function() {
     $(document).keyup(function(event){
         if(event.which=='27'){
             formModal.removeClass('is-visible');
+            clearFormLogin();
         }
     });
 

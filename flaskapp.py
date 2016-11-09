@@ -1,6 +1,7 @@
 import os
 import requests
 import timeit
+import json
 from datetime import datetime
 from flask import Flask, request, flash, url_for, redirect, \
      render_template, abort, send_from_directory
@@ -26,8 +27,13 @@ class login(Resource):
 	def post(self):
 		try:
 			parser = reqparse.RequestParser()
-			parser.add_argument('username', type=str, help='Username to Login')
-			parser.add_argument('password', type=str, help='Password to Login')
+			parser.add_argument('username', 
+								required=True,type=str, 
+								help='Username to Login')
+			parser.add_argument('password', 
+								required=True, 
+								type=str, 
+								help='Password to Login')
 			args = parser.parse_args()
 
 			_userUsername = args['username']
@@ -43,9 +49,9 @@ class login(Resource):
 			result = session_requests.post(LOGIN_URL, 
 										data = payload, 
 										headers = dict(referer = LOGIN_URL))
-
 			if result.content != ' Login Sukses!':
-				return {'status':'fail','data':{'message': 'Password Atau Username Salah'}}, 400
+				return {'status':'fail',
+						'data':{'message': 'Password Atau Username Salah'}}, 400
 
 			getDataUser = session_requests.get(URL, 
 											headers = dict(referer = URL))
@@ -58,7 +64,9 @@ class login(Resource):
 					'SilverCoin': hasil[1],
 					'GoldCoin' : hasil[2],
 					'cookies': session_requests.cookies.get_dict()
-				}			}
+					}
+				}
+			session_requests.cookies.clear()
 			return dataUser
 				
 		except Exception as e:
@@ -67,8 +75,6 @@ class login(Resource):
 class buyWithSilverCoin(Resource):
 	def post(self):
 		try:
-			start_time = timeit.default_timer()
-			
 			parser = reqparse.RequestParser()
 			parser.add_argument('item', type=str, help='id Item for buy')
 			parser.add_argument('pass', type=str, help='password bank')
@@ -92,24 +98,33 @@ class buyWithSilverCoin(Resource):
 											data = payload, 
 											headers = dict(referer = URLBUY))
 			tree = html.fromstring(result.content)
+
 			if result.content == "Failed buy!, item is sold out":
-				return {'status' : 'fail', 'data':{'message': result.content}},403
+				return {'status' : 'fail', 
+						'data':{'message': result.content}},403
 			elif result.content == "Failed buy!, your S Coin is not enough":
-				return {'status' : 'fail', 'data':{'message': result.content}},403
+				return {'status' : 'fail', 
+						'data':{'message': result.content}},403
+			elif result.content == 'Failed buy!, your bank is full!':
+				return {'status':'success',
+						'data':{'result': 'Bank Full'}}
 
 			hasil = tree.xpath("//text()")
 			coinRaw = hasil[3].split(' : ',1)
 			coin = coinRaw[1].split(' ',1)
 
-			elapsed = float("%.3f" % (timeit.default_timer() - start_time))
+			elapsed = result.elapsed.total_seconds()
 
 			if hasil[0] == 'Failed buy!, your bank is full!':
-				return {'status':'success','time':elapsed,'data':{'result': 'Bank Full'}}
+				return {'status':'success','time':elapsed,
+						'data':{'result': 'Bank Full'}}
 			elif hasil[0] == 'Success Buy!, check bank at slot ':
-				return {'status':'success','time':elapsed,'data':{'result': hasil[0] + hasil[1],
-																	'SilverCoin' : coin[0]}}
+				return {'status':'success','time':elapsed,
+						'data':{'result': hasil[0] + hasil[1],
+						'SilverCoin' : coin[0]}}
 			else :
-				return {'status':'fail','time':elapsed,'data':{'message': 'Failed'}},403
+				return {'status':'fail','time':elapsed,
+						'data':{'message': 'Failed'}},403
 
 		except Exception as e:
 			return {'status':'error','data': {'message':str(e)}},403
@@ -146,7 +161,7 @@ class buyWithSilverCoinTryLoop(Resource):
 
 				result = session_requests.post(URLBUY,cookies= set_cookie, 
 												data = payload, 
-												headers = dict(referer = URLBUY))
+												headers = dict(referer=URLBUY))
 				tree = html.fromstring(result.content)
 				hasil = tree.xpath("//text()")
 				elapsed = float("%.3f" % (timeit.default_timer() - start_time))
@@ -156,7 +171,8 @@ class buyWithSilverCoinTryLoop(Resource):
 				elif hasil[0] == 'Success Buy!, check bank at slot ':
 					datas = hasil[0]+hasil[1]
 				else :
-					return {'status':'fail','time':elapsed,'data':{'message': 'Failed'}},403
+					return {'status':'fail','time':elapsed,
+							'data':{'message': 'Failed'}},403
 
 				allresult.append(datas)
 				if jumlah == i:
@@ -193,6 +209,7 @@ class buyItemMall(Resource):
 			result = session_requests.post(URLBUY,cookies= set_cookie, 
 											data = payload, 
 											headers = dict(referer = URLBUY))
+			
 			tree = html.fromstring(result.content)
 			hasil = tree.xpath("//text()")
 			print(hasil[0])
@@ -201,7 +218,8 @@ class buyItemMall(Resource):
 			elif hasil[0] == 'Success Buy!, check your im bank\n\t\t\t\t\t\t\t':
 				strHasil = hasil[0]
 				hasilakhir = strHasil.split(',',1)
-				return {'status':'success','data':{'result': hasilakhir[0]+hasilakhir[1]}}
+				return {'status':'success',
+						'data':{'result': hasilakhir[0]+hasilakhir[1]}}
 			else :
 				return {'status':'fail','data':{'message': 'Failed'}},403
 		except Exception as e:
@@ -244,8 +262,6 @@ class getDataUser(Resource):
 class getStock(Resource):
 	def post(self):
 		try:
-			start_time = timeit.default_timer()
-
 			parser = reqparse.RequestParser()
 			# parser.add_argument('cookies', type=str, help='cookies')
 			parser.add_argument('item', type=str, help='item')
@@ -269,7 +285,7 @@ class getStock(Resource):
 			hasil = tree.xpath("//p/text()")
 			strHasil = hasil[0]
 			finalResult = strHasil.split(' : ',1)
-			elapsed = float("%.3f" % (timeit.default_timer() - start_time))
+			elapsed = result.elapsed.total_seconds()
 			dataUser = {
 				'status':'success',
 				'time' : elapsed,
