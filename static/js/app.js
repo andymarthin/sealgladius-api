@@ -13,33 +13,45 @@ $(document).ready(function() {
         messagingSenderId: "197842084138"
     };
 
+    // check cookie every 5 minutes
+    setInterval(function(){
+        cekCookie();
+    },(5*60)*1000);
+
     firebase.initializeApp(config);
 
-        $('#login-modal').click(function(){
-            if ($.trim(username.val()).length > 3) {
-                if ($.trim(password.val()).length > 3) {;
-                    var dataLogin = {'username':username.val(), 
-                                        'password':password.val()
-                                    }
-                    cekCookie();
-                    login(dataLogin);
-                }
+    // login
+    $('#login-modal').click(function(){
+        if ($.trim(username.val()).length > 3) {
+            if ($.trim(password.val()).length > 3) {
+
+                // assign values to dataLogin
+                var dataLogin = {'username':username.val(), 
+                                    'password':password.val()
+                                }
+                cekCookie();
+                login(dataLogin);
             }
-        });
+        }
+    });
     
+    //if button logout click
     $('#logout').click(function(){
         logout();
     })
 
+    // show modal login
     $('#login-btn').click(function(){
         login_selected();
     });
+
     //close modal
     formModal.on('click', function(event){
         if( $(event.target).is(formModal) || $(event.target).is('.cd-close-form') ) {
             formModal.removeClass('is-visible');
         }   
     });
+
     //close modal when clicking the esc keyboard button
     $(document).keyup(function(event){
         if(event.which=='27'){

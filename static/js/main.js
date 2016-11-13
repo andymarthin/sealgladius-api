@@ -18,6 +18,7 @@ function login(dataLogin) {
              'GoldCoin': data.data.GoldCoin
             };
 
+        // assign data to LocalStorage
         lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
         lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
@@ -26,6 +27,8 @@ function login(dataLogin) {
         $('#username').text(data.data.Username);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
+
+        // 
         clearFormLogin();
     },
     error: function(xhr){
@@ -53,6 +56,8 @@ function setSilverCoin(coin){
 //checking cookies
 function cekCookie(){
     var cekCookies = lscache.get("PHPSESSID");
+
+    // delect cookies if expired
     lscache.flushExpired();
     if (cekCookies === null) {
         login_selected();
@@ -95,6 +100,9 @@ function login_selected(){
     formLogin.addClass('is-selected');
 }
 
+function getResult(results){
+    hasil = results
+}
 // for buy item with silver coin
 function buyWithSilverCoin(id, bank) {
     var cookies = lscache.get("PHPSESSID");
@@ -110,15 +118,14 @@ function buyWithSilverCoin(id, bank) {
             success: function(data) {
                 if(data.data.result == "Bank Full"){
                     $.notify(data.data.result,"error");
-                    return "";
                 }
                 $.notify(data.data.result,"success");
                 setSilverCoin(data.data.SilverCoin);
-                return "";
+
             },
             error: function(xhr){
                 var json = JSON.parse(xhr.responseText);
-                $.notify(json.data.message, "error");   
+                $.notify(json.data.message, "error");
             }
         });
     } catch (e) {
@@ -140,10 +147,10 @@ function buyItemMall(id, bank) {
             success: function(data) {
                 if(data.data.result == "Bank Full"){
                     $.notify(data.data.result,"error");
-                    return "";
+                    return 0;
                 }
                 $.notify(data.data.result,"success");
-                return "";
+                return 0;
             },
             error: function(xhr){
                 var json = JSON.parse(xhr.responseText);
@@ -189,33 +196,45 @@ $(document).ready(function() {
         messagingSenderId: "197842084138"
     };
 
+    // check cookie every 5 minutes
+    setInterval(function(){
+        cekCookie();
+    },(5*60)*1000);
+
     firebase.initializeApp(config);
 
-        $('#login-modal').click(function(){
-            if ($.trim(username.val()).length > 3) {
-                if ($.trim(password.val()).length > 3) {;
-                    var dataLogin = {'username':username.val(), 
-                                        'password':password.val()
-                                    }
-                    cekCookie();
-                    login(dataLogin);
-                }
+    // login
+    $('#login-modal').click(function(){
+        if ($.trim(username.val()).length > 3) {
+            if ($.trim(password.val()).length > 3) {
+
+                // assign values to dataLogin
+                var dataLogin = {'username':username.val(), 
+                                    'password':password.val()
+                                }
+                cekCookie();
+                login(dataLogin);
             }
-        });
+        }
+    });
     
+    //if button logout click
     $('#logout').click(function(){
         logout();
     })
 
+    // show modal login
     $('#login-btn').click(function(){
         login_selected();
     });
+
     //close modal
     formModal.on('click', function(event){
         if( $(event.target).is(formModal) || $(event.target).is('.cd-close-form') ) {
             formModal.removeClass('is-visible');
         }   
     });
+
     //close modal when clicking the esc keyboard button
     $(document).keyup(function(event){
         if(event.which=='27'){

@@ -18,6 +18,7 @@ function login(dataLogin) {
              'GoldCoin': data.data.GoldCoin
             };
 
+        // assign data to LocalStorage
         lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
         lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
@@ -26,6 +27,8 @@ function login(dataLogin) {
         $('#username').text(data.data.Username);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
+
+        // 
         clearFormLogin();
     },
     error: function(xhr){
@@ -53,6 +56,8 @@ function setSilverCoin(coin){
 //checking cookies
 function cekCookie(){
     var cekCookies = lscache.get("PHPSESSID");
+
+    // delect cookies if expired
     lscache.flushExpired();
     if (cekCookies === null) {
         login_selected();
@@ -95,6 +100,9 @@ function login_selected(){
     formLogin.addClass('is-selected');
 }
 
+function getResult(results){
+    hasil = results
+}
 // for buy item with silver coin
 function buyWithSilverCoin(id, bank) {
     var cookies = lscache.get("PHPSESSID");
@@ -110,15 +118,14 @@ function buyWithSilverCoin(id, bank) {
             success: function(data) {
                 if(data.data.result == "Bank Full"){
                     $.notify(data.data.result,"error");
-                    return "";
                 }
                 $.notify(data.data.result,"success");
                 setSilverCoin(data.data.SilverCoin);
-                return "";
+
             },
             error: function(xhr){
                 var json = JSON.parse(xhr.responseText);
-                $.notify(json.data.message, "error");   
+                $.notify(json.data.message, "error");
             }
         });
     } catch (e) {
@@ -140,10 +147,10 @@ function buyItemMall(id, bank) {
             success: function(data) {
                 if(data.data.result == "Bank Full"){
                     $.notify(data.data.result,"error");
-                    return "";
+                    return 0;
                 }
                 $.notify(data.data.result,"success");
-                return "";
+                return 0;
             },
             error: function(xhr){
                 var json = JSON.parse(xhr.responseText);
