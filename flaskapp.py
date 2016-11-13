@@ -28,12 +28,12 @@ class login(Resource):
 		try:
 			parser = reqparse.RequestParser()
 			parser.add_argument('username', 
-								required=True,type=str, 
-								help='Username to Login')
-			parser.add_argument('password', 
-								required=True, 
-								type=str, 
-								help='Password to Login')
+						required=True,type=str, 
+						help='Username to Login')
+			parser.add_argument('password',
+						required=True, 
+						type=str, 
+						help='Password to Login')
 			args = parser.parse_args()
 
 			_userUsername = args['username']
@@ -47,14 +47,14 @@ class login(Resource):
 			}
 
 			result = session_requests.post(LOGIN_URL, 
-										data = payload, 
-										headers = dict(referer = LOGIN_URL))
+							data = payload, 
+							headers = dict(referer = LOGIN_URL))
 			if result.content != ' Login Sukses!':
 				return {'status':'fail',
-						'data':{'message': 'Password Atau Username Salah'}}, 400
+					'data':{'message': 'Password Atau Username Salah'}}, 400
 
 			getDataUser = session_requests.get(URL, 
-											headers = dict(referer = URL))
+							headers = dict(referer = URL))
 			tree = html.fromstring(getDataUser.content)
 			hasil = tree.xpath("//b/text()")
 			dataUser = {
@@ -95,19 +95,21 @@ class buyWithSilverCoin(Resource):
 
 			URLBUY = "http://seal-gladius.com//itemmall-bayarr"
 			result = session_requests.post(URLBUY,cookies= set_cookie, 
-											data = payload, 
-											headers = dict(referer = URLBUY))
+							data = payload, 
+							headers = dict(referer = URLBUY))
 			tree = html.fromstring(result.content)
-
 			if result.content == "Failed buy!, item is sold out":
 				return {'status' : 'fail', 
-						'data':{'message': result.content}},403
+					'data':{'message': result.content}},403
 			elif result.content == "Failed buy!, your S Coin is not enough":
 				return {'status' : 'fail', 
-						'data':{'message': result.content}},403
+					'data':{'message': result.content}},403
+			elif result.content == "Your bank password is not correct!":
+				return {'status' : 'fail', 
+					'data':{'message': result.content}},403
 			elif result.content == 'Failed buy!, your bank is full!':
 				return {'status':'success',
-						'data':{'result': 'Bank Full'}}
+					'data':{'result': 'Bank Full'}},403
 
 			hasil = tree.xpath("//text()")
 			coinRaw = hasil[3].split(' : ',1)
@@ -120,11 +122,11 @@ class buyWithSilverCoin(Resource):
 						'data':{'result': 'Bank Full'}}
 			elif hasil[0] == 'Success Buy!, check bank at slot ':
 				return {'status':'success','time':elapsed,
-						'data':{'result': hasil[0] + hasil[1],
-						'SilverCoin' : coin[0]}}
+					'data':{'result': hasil[0] + hasil[1],
+					'SilverCoin' : coin[0]}}
 			else :
 				return {'status':'fail','time':elapsed,
-						'data':{'message': 'Failed'}},403
+					'data':{'message': 'Failed'}},403
 
 		except Exception as e:
 			return {'status':'error','data': {'message':str(e)}},403
@@ -160,8 +162,8 @@ class buyWithSilverCoinTryLoop(Resource):
 			while (i <= jumlah):
 
 				result = session_requests.post(URLBUY,cookies= set_cookie, 
-												data = payload, 
-												headers = dict(referer=URLBUY))
+								data = payload, 
+								headers = dict(referer=URLBUY))
 				tree = html.fromstring(result.content)
 				hasil = tree.xpath("//text()")
 				elapsed = float("%.3f" % (timeit.default_timer() - start_time))
@@ -172,7 +174,7 @@ class buyWithSilverCoinTryLoop(Resource):
 					datas = hasil[0]+hasil[1]
 				else :
 					return {'status':'fail','time':elapsed,
-							'data':{'message': 'Failed'}},403
+						'data':{'message': 'Failed'}},403
 
 				allresult.append(datas)
 				if jumlah == i:
@@ -207,8 +209,8 @@ class buyItemMall(Resource):
 
 			URLBUY = "http://seal-gladius.com//itemmall-bayar"
 			result = session_requests.post(URLBUY,cookies= set_cookie, 
-											data = payload, 
-											headers = dict(referer = URLBUY))
+							data = payload, 
+							headers = dict(referer = URLBUY))
 			
 			tree = html.fromstring(result.content)
 			hasil = tree.xpath("//text()")
@@ -238,7 +240,7 @@ class getDataUser(Resource):
 			}
 
 			getDataUser = session_requests.get(URL,cookies= set_cookie, 
-											headers = dict(referer = URL))
+								headers = dict(referer = URL))
 			tree = html.fromstring(getDataUser.content)
 			cekData = tree.xpath("//center/text()")
 
@@ -275,7 +277,7 @@ class getStock(Resource):
 			idItem = args['item']
 			URLITEM = "http://seal-gladius.com/itemmall-detaill?item="+idItem
 			getDataUser = session_requests.get(URLITEM, 
-											headers = dict(referer = URLITEM))
+								headers = dict(referer = URLITEM))
 			tree = html.fromstring(getDataUser.content)
 			cekData = tree.xpath("//p/text()")
 
