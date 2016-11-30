@@ -12,28 +12,37 @@ function login(dataLogin) {
     dataType: 'JSON',
     data: dataLogin,
     cache: false,
+    before:function(){
+        $('#login-modal').addClass("btn-hide");
+        $('#loader').removeClass("btn-hide");
+    },
     success: function(data) {
-        var DataUser = {'username': data.data.Username,
-             'SilverCoin': data.data.SilverCoin,
-             'GoldCoin': data.data.GoldCoin
-            };
+        // var DataUser = {'username': data.data.Username,
+        //      'SilverCoin': data.data.SilverCoin,
+        //      'GoldCoin': data.data.GoldCoin
+        //     };
 
         // assign data to LocalStorage
         lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
-        lscache.set("DataUser",  JSON.stringify(DataUser),24);
+        // lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
         formModal.removeClass('is-visible');
         cekCookie();
-        $('#username').text(data.data.Username);
+        // $('#username').text(data.data.Username);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
 
         // 
         clearFormLogin();
+
+        $('#loader').addClass("btn-hide");
+        $('#login-modal').removeClass("btn-hide");
     },
     error: function(xhr){
         var json = JSON.parse(xhr.responseText);
         $.notify(json.data.message, "error");
+        $('#loader').addClass("btn-hide");
+        $('#login-modal').removeClass("btn-hide");
     }
 });
 }
@@ -65,10 +74,10 @@ function cekCookie(){
         $('#kirim').addClass('btn-hide');
         $('#navigasi').addClass('btn-hide');
     }else{
-        var dataUser = lscache.get("DataUser");
-        $('#username').text(dataUser.username);
-        $('#SilverCoin').text(dataUser.SilverCoin);
-        $('#GoldCoin').text(dataUser.GoldCoin);
+        // var dataUser = lscache.get("DataUser");
+        // $('#username').text(dataUser.username);
+        // $('#SilverCoin').text(dataUser.SilverCoin);
+        // $('#GoldCoin').text(dataUser.GoldCoin);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
         $('#navigasi').removeClass('btn-hide');
@@ -116,11 +125,11 @@ function buyWithSilverCoin(id, bank) {
             data: dataJSON,
             cache: false,
             success: function(data) {
-                if(data.data.result == "Bank Full"){
-                    $.notify(data.data.result,"error");
-                }
-                $.notify(data.data.result,"success");
-                setSilverCoin(data.data.SilverCoin);
+                // if(data.data.result == "Bank Full"){
+                //     $.notify(data.data.result,"error");
+                // }
+                $.notify(data.result,"success");
+                // setSilverCoin(data.data.SilverCoin);
 
             },
             error: function(xhr){

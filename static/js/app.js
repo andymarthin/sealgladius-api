@@ -5,21 +5,23 @@ $(document).ready(function() {
     cekCookie();
 
     // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyDZ8vUjJIgha78quhnLh5nDnXMDhQ6XE30",
-        authDomain: "log-seal.firebaseapp.com",
-        databaseURL: "https://log-seal.firebaseio.com",
-        storageBucket: "log-seal.appspot.com",
-        messagingSenderId: "197842084138"
-    };
+    // var config = {
+    //     apiKey: "AIzaSyDZ8vUjJIgha78quhnLh5nDnXMDhQ6XE30",
+    //     authDomain: "log-seal.firebaseapp.com",
+    //     databaseURL: "https://log-seal.firebaseio.com",
+    //     storageBucket: "log-seal.appspot.com",
+    //     messagingSenderId: "197842084138"
+    // };
+    // 
+    // firebase.initializeApp(config);
+
 
     // check cookie every 5 minutes
     setInterval(function(){
         cekCookie();
     },(5*60)*1000);
 
-    firebase.initializeApp(config);
-
+    
     // login
     $('#login-modal').click(function(){
         if ($.trim(username.val()).length > 3) {
@@ -72,12 +74,12 @@ $(document).ready(function() {
             //untuk beli beli ATB2
             if (id == "ATB") {
                 id = "440"; // ID dari ATB2
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 0; i <= jumlah; i++) {
                     buyItemMall(id, bank);
                 }
             } else if (id == "jika") { //untuk beli Jikael All Job
-                for (var i = 0; i < jumlah; i++) {
-                    for (var idJika = 272; idJika <= 275; idJika++) {
+                for (var i = 0; i <= jumlah; i++) {
+                    for (var idJika = 20; idJika <= 23; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
                 }
@@ -105,7 +107,7 @@ $(document).ready(function() {
                 }
             } else if (id == "BSBE") { // beli Black Salamander dan Blue Eagle
                 for (var i = 0; i <= jumlah; i++) {
-                    for (var idBSBE = 198; idBSBE <= 199; idBSBE++) {
+                    for (var idBSBE = 3; idBSBE <= 4; idBSBE++) {
                         buyWithSilverCoin(idBSBE, bank);
                     }
                 }
@@ -114,7 +116,7 @@ $(document).ready(function() {
                     buyWithSilverCoin(idMaterial, bank);
                 }
             } else {
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 0; i <= jumlah; i++) {
                     buyWithSilverCoin(id, bank);
                 }
             }
@@ -122,33 +124,33 @@ $(document).ready(function() {
             $.notify("MASUKIN PASS BANK DULU COK !!!", "error");
         }
 
-        try{
-            firebase.auth().signInAnonymously().catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              console.log(errorMessage);
-            });
+        // try{
+        //     firebase.auth().signInAnonymously().catch(function(error) {
+        //       // Handle Errors here.
+        //       var errorCode = error.code;
+        //       var errorMessage = error.message;
+        //       console.log(errorMessage);
+        //     });
 
-            var dataUser = lscache.get("DataUser");
-            var ipClient = "";
-            var database = firebase.database();
-            var waktu = moment().format('D-MM-YYYY, h:mm:ss a');
-            var idByTime = moment().format('YYYY-MM-D/ h:mm:ss:ms a');
-            var item = $('input[name=item]:checked', '#form-isi').next('label:first').html()
-            $.get("https://ipinfo.io", function(response) {
-                database.ref('Logs/' + idByTime).set({
-                    Username: dataUser.username,
-                    IP: response.ip,
-                    City: response.city,
-                    Location: response.loc,
-                    Item: item,
-                    Jumlah: jumlah,
-                    Time: waktu
-                  });
-            }, "jsonp");
-        }catch(e){
-            console.log(e);
-        }
+        //     var dataUser = lscache.get("DataUser");
+        //     var ipClient = "";
+        //     var database = firebase.database();
+        //     var waktu = moment().format('D-MM-YYYY, h:mm:ss a');
+        //     var idByTime = moment().format('YYYY-MM-D/ h:mm:ss:ms a');
+        //     var item = $('input[name=item]:checked', '#form-isi').next('label:first').html()
+        //     $.get("https://ipinfo.io", function(response) {
+        //         database.ref('Logs/' + idByTime).set({
+        //             Username: dataUser.username,
+        //             IP: response.ip,
+        //             City: response.city,
+        //             Location: response.loc,
+        //             Item: item,
+        //             Jumlah: jumlah,
+        //             Time: waktu
+        //           });
+        //     }, "jsonp");
+        // }catch(e){
+        //     console.log(e);
+        // }
     });
 });

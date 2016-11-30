@@ -12,28 +12,37 @@ function login(dataLogin) {
     dataType: 'JSON',
     data: dataLogin,
     cache: false,
+    before:function(){
+        $('#login-modal').addClass("btn-hide");
+        $('#loader').removeClass("btn-hide");
+    },
     success: function(data) {
-        var DataUser = {'username': data.data.Username,
-             'SilverCoin': data.data.SilverCoin,
-             'GoldCoin': data.data.GoldCoin
-            };
+        // var DataUser = {'username': data.data.Username,
+        //      'SilverCoin': data.data.SilverCoin,
+        //      'GoldCoin': data.data.GoldCoin
+        //     };
 
         // assign data to LocalStorage
         lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
-        lscache.set("DataUser",  JSON.stringify(DataUser),24);
+        // lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
         formModal.removeClass('is-visible');
         cekCookie();
-        $('#username').text(data.data.Username);
+        // $('#username').text(data.data.Username);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
 
         // 
         clearFormLogin();
+
+        $('#loader').addClass("btn-hide");
+        $('#login-modal').removeClass("btn-hide");
     },
     error: function(xhr){
         var json = JSON.parse(xhr.responseText);
         $.notify(json.data.message, "error");
+        $('#loader').addClass("btn-hide");
+        $('#login-modal').removeClass("btn-hide");
     }
 });
 }
@@ -65,10 +74,10 @@ function cekCookie(){
         $('#kirim').addClass('btn-hide');
         $('#navigasi').addClass('btn-hide');
     }else{
-        var dataUser = lscache.get("DataUser");
-        $('#username').text(dataUser.username);
-        $('#SilverCoin').text(dataUser.SilverCoin);
-        $('#GoldCoin').text(dataUser.GoldCoin);
+        // var dataUser = lscache.get("DataUser");
+        // $('#username').text(dataUser.username);
+        // $('#SilverCoin').text(dataUser.SilverCoin);
+        // $('#GoldCoin').text(dataUser.GoldCoin);
         $('#kirim').removeClass('btn-hide');
         $('#login-btn').addClass('btn-hide');
         $('#navigasi').removeClass('btn-hide');
@@ -116,11 +125,11 @@ function buyWithSilverCoin(id, bank) {
             data: dataJSON,
             cache: false,
             success: function(data) {
-                if(data.data.result == "Bank Full"){
-                    $.notify(data.data.result,"error");
-                }
-                $.notify(data.data.result,"success");
-                setSilverCoin(data.data.SilverCoin);
+                // if(data.data.result == "Bank Full"){
+                //     $.notify(data.data.result,"error");
+                // }
+                $.notify(data.result,"success");
+                // setSilverCoin(data.data.SilverCoin);
 
             },
             error: function(xhr){
@@ -188,21 +197,23 @@ $(document).ready(function() {
     cekCookie();
 
     // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyDZ8vUjJIgha78quhnLh5nDnXMDhQ6XE30",
-        authDomain: "log-seal.firebaseapp.com",
-        databaseURL: "https://log-seal.firebaseio.com",
-        storageBucket: "log-seal.appspot.com",
-        messagingSenderId: "197842084138"
-    };
+    // var config = {
+    //     apiKey: "AIzaSyDZ8vUjJIgha78quhnLh5nDnXMDhQ6XE30",
+    //     authDomain: "log-seal.firebaseapp.com",
+    //     databaseURL: "https://log-seal.firebaseio.com",
+    //     storageBucket: "log-seal.appspot.com",
+    //     messagingSenderId: "197842084138"
+    // };
+    // 
+    // firebase.initializeApp(config);
+
 
     // check cookie every 5 minutes
     setInterval(function(){
         cekCookie();
     },(5*60)*1000);
 
-    firebase.initializeApp(config);
-
+    
     // login
     $('#login-modal').click(function(){
         if ($.trim(username.val()).length > 3) {
@@ -255,12 +266,12 @@ $(document).ready(function() {
             //untuk beli beli ATB2
             if (id == "ATB") {
                 id = "440"; // ID dari ATB2
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 0; i <= jumlah; i++) {
                     buyItemMall(id, bank);
                 }
             } else if (id == "jika") { //untuk beli Jikael All Job
-                for (var i = 0; i < jumlah; i++) {
-                    for (var idJika = 272; idJika <= 275; idJika++) {
+                for (var i = 0; i <= jumlah; i++) {
+                    for (var idJika = 20; idJika <= 23; idJika++) {
                         buyWithSilverCoin(idJika, bank);
                     }
                 }
@@ -288,7 +299,7 @@ $(document).ready(function() {
                 }
             } else if (id == "BSBE") { // beli Black Salamander dan Blue Eagle
                 for (var i = 0; i <= jumlah; i++) {
-                    for (var idBSBE = 198; idBSBE <= 199; idBSBE++) {
+                    for (var idBSBE = 3; idBSBE <= 4; idBSBE++) {
                         buyWithSilverCoin(idBSBE, bank);
                     }
                 }
@@ -297,7 +308,7 @@ $(document).ready(function() {
                     buyWithSilverCoin(idMaterial, bank);
                 }
             } else {
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 0; i <= jumlah; i++) {
                     buyWithSilverCoin(id, bank);
                 }
             }
@@ -305,33 +316,33 @@ $(document).ready(function() {
             $.notify("MASUKIN PASS BANK DULU COK !!!", "error");
         }
 
-        try{
-            firebase.auth().signInAnonymously().catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              console.log(errorMessage);
-            });
+        // try{
+        //     firebase.auth().signInAnonymously().catch(function(error) {
+        //       // Handle Errors here.
+        //       var errorCode = error.code;
+        //       var errorMessage = error.message;
+        //       console.log(errorMessage);
+        //     });
 
-            var dataUser = lscache.get("DataUser");
-            var ipClient = "";
-            var database = firebase.database();
-            var waktu = moment().format('D-MM-YYYY, h:mm:ss a');
-            var idByTime = moment().format('YYYY-MM-D/ h:mm:ss:ms a');
-            var item = $('input[name=item]:checked', '#form-isi').next('label:first').html()
-            $.get("https://ipinfo.io", function(response) {
-                database.ref('Logs/' + idByTime).set({
-                    Username: dataUser.username,
-                    IP: response.ip,
-                    City: response.city,
-                    Location: response.loc,
-                    Item: item,
-                    Jumlah: jumlah,
-                    Time: waktu
-                  });
-            }, "jsonp");
-        }catch(e){
-            console.log(e);
-        }
+        //     var dataUser = lscache.get("DataUser");
+        //     var ipClient = "";
+        //     var database = firebase.database();
+        //     var waktu = moment().format('D-MM-YYYY, h:mm:ss a');
+        //     var idByTime = moment().format('YYYY-MM-D/ h:mm:ss:ms a');
+        //     var item = $('input[name=item]:checked', '#form-isi').next('label:first').html()
+        //     $.get("https://ipinfo.io", function(response) {
+        //         database.ref('Logs/' + idByTime).set({
+        //             Username: dataUser.username,
+        //             IP: response.ip,
+        //             City: response.city,
+        //             Location: response.loc,
+        //             Item: item,
+        //             Jumlah: jumlah,
+        //             Time: waktu
+        //           });
+        //     }, "jsonp");
+        // }catch(e){
+        //     console.log(e);
+        // }
     });
 });
