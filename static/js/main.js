@@ -87,7 +87,6 @@ function cekCookie(){
 //logout and delete cookies
 function logout(){
     lscache.flush();
-    $('#username').text("");
     cekCookie();
     clearFormBuy();
 }
