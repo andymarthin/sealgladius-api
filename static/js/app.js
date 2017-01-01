@@ -2,7 +2,7 @@ $(document).ready(function() {
     var username = $('#signin-username'),
         password = $('#signin-password');
 
-    cekCookie();
+    //cekCookie();
 
     // Initialize Firebase
     // var config = {
@@ -17,9 +17,9 @@ $(document).ready(function() {
 
 
     // check cookie every 5 minutes
-    setInterval(function(){
-        cekCookie();
-    },(5*60)*1000);
+    // setInterval(function(){
+    //     cekCookie();
+    // },(5*60)*1000);
 
     
     // login
@@ -38,14 +38,14 @@ $(document).ready(function() {
     });
     
     //if button logout click
-    $('#logout').click(function(){
-        logout();
-    })
+    // $('#logout').click(function(){
+    //     logout();
+    // })
 
     // show modal login
-    $('#login-btn').click(function(){
-        login_selected();
-    });
+    // $('#login-btn').click(function(){
+    //     login_selected();
+    // });
 
     //close modal
     formModal.on('click', function(event){
@@ -69,7 +69,7 @@ $(document).ready(function() {
         jumlah = $('#jumlah').val(); //jumlah yang ingin di beli
         bank = $('#bank').val(); //mengambil password bank
         $('#hasil').html(""); //reset id hasil
-        cekCookie();
+        //cekCookie();
         if (bank.length > 3) {
             //untuk beli beli ATB2
             if (id == "ATB") {
@@ -90,7 +90,7 @@ $(document).ready(function() {
                     }
                 }
             } else if (id == "SBS") { // beli Salamander dan Black Salamander
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 1; i < jumlah; i++) {
                     var idSBS = 193;
                     for (var n = 1; n <= 2; n++) {
                         buyWithSilverCoin(idSBS, bank);
@@ -98,7 +98,7 @@ $(document).ready(function() {
                     }
                 }
             } else if (id == "EBE") { // beli Eagle dan Blue Eagle
-                for (var i = 0; i < jumlah; i++) {
+                for (var i = 1; i < jumlah; i++) {
                     var idEBE = 194;
                     for (var n = 1; n <= 2; n++) {
                         buyWithSilverCoin(idEBE, bank);
@@ -106,7 +106,7 @@ $(document).ready(function() {
                     }
                 }
             } else if (id == "BSBE") { // beli Black Salamander dan Blue Eagle
-                for (var i = 0; i <= jumlah; i++) {
+                for (var i = 1; i <= jumlah; i++) {
                     for (var idBSBE = 3; idBSBE <= 4; idBSBE++) {
                         buyWithSilverCoin(idBSBE, bank);
                     }
@@ -116,7 +116,7 @@ $(document).ready(function() {
                     buyWithSilverCoin(idMaterial, bank);
                 }
             } else {
-                for (var i = 0; i <= jumlah; i++) {
+                for (var i = 1; i <= jumlah; i++) {
                     buyWithSilverCoin(id, bank);
                 }
             }
