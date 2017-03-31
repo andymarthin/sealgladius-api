@@ -24,16 +24,13 @@ function login(dataLogin) {
 
         // assign data to LocalStorage
         lscache.set("PHPSESSID", data.data.cookies.PHPSESSID, 24);
-
-        //document.cookie = data.data.cookies.PHPSESSID;
-        Cookies.set('PHPSESSID', data.data.cookies.PHPSESSID);
         // lscache.set("DataUser",  JSON.stringify(DataUser),24);
 
         formModal.removeClass('is-visible');
-        //cekCookie();
+        cekCookie();
         // $('#username').text(data.data.Username);
-        // $('#kirim').removeClass('btn-hide');
-        // $('#login-btn').addClass('btn-hide');
+        $('#kirim').removeClass('btn-hide');
+        $('#login-btn').addClass('btn-hide');
 
         // 
         clearFormLogin();
@@ -48,7 +45,6 @@ function login(dataLogin) {
         $('#login-modal').removeClass("btn-hide");
     }
 });
-
 }
 
 //set Silver coin after buy
@@ -67,26 +63,26 @@ function setSilverCoin(coin){
 }
 
 //checking cookies
-// function cekCookie(){
-//     var cekCookies = lscache.get("PHPSESSID");
+function cekCookie(){
+    var cekCookies = lscache.get("PHPSESSID");
 
-//     // delect cookies if expired
-//     lscache.flushExpired();
-//     if (cekCookies === null) {
-//         login_selected();
-//         $('#login-btn').removeClass('btn-hide');
-//         $('#kirim').addClass('btn-hide');
-//         $('#navigasi').addClass('btn-hide');
-//     }else{
-//         // var dataUser = lscache.get("DataUser");
-//         // $('#username').text(dataUser.username);
-//         // $('#SilverCoin').text(dataUser.SilverCoin);
-//         // $('#GoldCoin').text(dataUser.GoldCoin);
-//         $('#kirim').removeClass('btn-hide');
-//         $('#login-btn').addClass('btn-hide');
-//         $('#navigasi').removeClass('btn-hide');
-//     }        
-// }
+    // delect cookies if expired
+    lscache.flushExpired();
+    if (cekCookies === null) {
+        login_selected();
+        $('#login-btn').removeClass('btn-hide');
+        $('#kirim').addClass('btn-hide');
+        $('#navigasi').addClass('btn-hide');
+    }else{
+        // var dataUser = lscache.get("DataUser");
+        // $('#username').text(dataUser.username);
+        // $('#SilverCoin').text(dataUser.SilverCoin);
+        // $('#GoldCoin').text(dataUser.GoldCoin);
+        $('#kirim').removeClass('btn-hide');
+        $('#login-btn').addClass('btn-hide');
+        $('#navigasi').removeClass('btn-hide');
+    }        
+}
 
 //logout and delete cookies
 function logout(){
@@ -117,22 +113,29 @@ function getResult(results){
 }
 // for buy item with silver coin
 function buyWithSilverCoin(id, bank) {
-    //var cookies = lscache.get("PHPSESSID");
-    var dataJSON = {'pbnks': bank, 'id' : id};
-    var datas = 'pbnks=' + bank + '&id=' + id ;
-    //cekCookie();
+    var cookies = lscache.get("PHPSESSID");
+    var dataJSON = {'pass': bank, 'item' : id, 'cookies': cookies};
+    cekCookie();
     try {
         $.ajax({
             type: "POST",
-            url: "http://patch.seal-gladius.com/inc_/buy",
-            dataType: 'JSONP',
-            data: datas,
+            url: "/silvercoin",
+            dataType: 'JSON',
+            data: dataJSON,
             cache: false,
-            xhrFields: {
-                withCredentials: true
+            success: function(data) {
+                // if(data.data.result == "Bank Full"){
+                //     $.notify(data.data.result,"error");
+                // }
+                $.notify(data.result,"success");
+                // setSilverCoin(data.data.SilverCoin);
+
             },
+            error: function(xhr){
+                var json = JSON.parse(xhr.responseText);
+                $.notify(json.data.message, "error");
+            }
         });
-        $.notify("cek bank Gan","success");
     } catch (e) {
         alert(e);
     }

@@ -10,8 +10,8 @@ from lxml import html
 
 app = Flask(__name__)
 api = Api(app)
-LOGIN_URL = "http://seal-gladius.com/login"
-URL = "http://seal-gladius.com/datauser"
+LOGIN_URL = "http://seal-exorcist.com/exc/post_login"
+URL = "http://seal-exorcist.com"
 session_requests = requests.session()
 
 @app.route('/')
@@ -42,27 +42,26 @@ class login(Resource):
 			# Create payload
 			payload = { 
 				"username": _userUsername,
-				"password": _userPassword,
-				"is_ajax" : 1 
+				"password": _userPassword
+
 			}
 
 			result = session_requests.post(LOGIN_URL, 
 							data = payload, 
 							headers = dict(referer = LOGIN_URL))
-			if result.content != ' Login Sukses!':
-				return {'status':'fail',
-					'data':{'message': 'Password Atau Username Salah'}}, 400
+			print result.content
+			# if result.content != ' Login Sukses!':
+			# 	return {'status':'fail',
+			# 		'data':{'message': 'Password Atau Username Salah'}}, 400
 
 			getDataUser = session_requests.get(URL, 
 							headers = dict(referer = URL))
-			tree = html.fromstring(getDataUser.content)
-			hasil = tree.xpath("//b/text()")
+			# tree = html.fromstring(getDataUser.content)
+			# hasil = tree.xpath("//b/text()")
 			dataUser = {
 				'status': 'success',
 				'data': {
-					'Username': hasil[0],
-					'SilverCoin': hasil[1],
-					'GoldCoin' : hasil[2],
+
 					'cookies': session_requests.cookies.get_dict()
 					}
 				}
@@ -83,9 +82,9 @@ class buyWithSilverCoin(Resource):
 
 			#set data payload
 			payload = {
-				'passbank': args['pass'],
-				'idmall' : args['item'],
-				"is_ajax"  : 1
+				'pbnks': args['pass'],
+				'id' : args['item'],
+
 			}
 
 			#set cookie
@@ -93,40 +92,41 @@ class buyWithSilverCoin(Resource):
 				'PHPSESSID': args['cookies']
 			}
 
-			URLBUY = "http://seal-gladius.com//itemmall-bayarr"
+			URLBUY = "http://seal-exorcist.com/exc/webshop_ep_buy"
 			result = session_requests.post(URLBUY,cookies= set_cookie, 
 							data = payload, 
 							headers = dict(referer = URLBUY))
-			tree = html.fromstring(result.content)
-			if result.content == "Failed buy!, item is sold out":
-				return {'status' : 'fail', 
-					'data':{'message': result.content}},403
-			elif result.content == "Failed buy!, your S Coin is not enough":
-				return {'status' : 'fail', 
-					'data':{'message': result.content}},403
-			elif result.content == "Your bank password is not correct!":
-				return {'status' : 'fail', 
-					'data':{'message': result.content}},403
-			elif result.content == 'Failed buy!, your bank is full!':
-				return {'status':'success',
-					'data':{'result': 'Bank Full'}},403
+			print result.content
+			# tree = html.fromstring(result.content)
+			# if result.content == "Failed buy!, item is sold out":
+			# 	return {'status' : 'fail', 
+			# 		'data':{'message': result.content}},403
+			# elif result.content == "Failed buy!, your S Coin is not enough":
+			# 	return {'status' : 'fail', 
+			# 		'data':{'message': result.content}},403
+			# elif result.content == "Your bank password is not correct!":
+			# 	return {'status' : 'fail', 
+			# 		'data':{'message': result.content}},403
+			# elif result.content == 'Failed buy!, your bank is full!':
+			# 	return {'status':'success',
+			# 		'data':{'result': 'Bank Full'}},403
 
-			hasil = tree.xpath("//text()")
-			coinRaw = hasil[3].split(' : ',1)
-			coin = coinRaw[1].split(' ',1)
+			# hasil = tree.xpath("//text()")
+			# coinRaw = hasil[3].split(' : ',1)
+			# coin = coinRaw[1].split(' ',1)
 
-			elapsed = result.elapsed.total_seconds()
+			# elapsed = result.elapsed.total_seconds()
 
-			if hasil[0] == 'Failed buy!, your bank is full!':
-				return {'status':'success','time':elapsed,
-						'data':{'result': 'Bank Full'}}
-			elif hasil[0] == 'Success Buy!, check bank at slot ':
-				return {'status':'success','time':elapsed,
-					'data':{'result': hasil[0] + hasil[1],
-					'SilverCoin' : coin[0]}}
-			else :
-				return {'status':'fail','time':elapsed,
-					'data':{'message': 'Failed'}},403
+			# if hasil[0] == 'Failed buy!, your bank is full!':
+			# 	return {'status':'success','time':elapsed,
+			# 			'data':{'result': 'Bank Full'}}
+			# elif hasil[0] == 'Success Buy!, check bank at slot ':
+			# 	return {'status':'success','time':elapsed,
+			# 		'data':{'result': hasil[0] + hasil[1],
+			# 		'SilverCoin' : coin[0]}}
+			# else :
+			# 	return {'status':'fail','time':elapsed,
+			# 		'data':{'message': 'Failed'}},403
 
 		except Exception as e:
 			return {'status':'error','data': {'message':str(e)}},403
